@@ -1,0 +1,11 @@
+previous_outcome,contact_band,records,subscriptions,subscription_pct
+Failure,1 contact,2458,343,13.95
+Failure,2–3 contacts,1874,230,12.27
+Failure,4–6 contacts,469,42,8.96
+Failure,7+ contacts,100,3,3.0
+Other,1 contact,718,137,19.08
+Other,2–3 contacts,762,131,17.19
+Other,4–6 contacts,272,33,12.13
+Success,1 contact,837,557,66.55
+Success,2–3 contacts,551,363,65.88
+Success,4–6 contacts,102,54,52.94

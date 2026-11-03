@@ -1,0 +1,190 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Bank Campaign Review</title>
+<style>
+:root{--navy:#102b38;--ink:#182f3b;--muted:#4c6571;--teal:#007b77;--mint:#b8ebe1;--paper:#eff4f4;--line:#d8e4e4}
+*{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--ink);font:16px/1.5 system-ui,sans-serif}
+header{background:var(--navy);color:#fff;padding:38px max(24px,calc((100% - 1100px)/2))}
+.eyebrow{color:var(--mint);font-weight:700;font-size:.78rem;letter-spacing:.14em;text-transform:uppercase}
+h1{font-size:clamp(2rem,5vw,3.2rem);line-height:1.1;margin:9px 0 12px}
+header p{max-width:650px;margin:0;color:#d8eaed}
+main,footer{max-width:1148px;margin:auto;padding:22px 24px}
+h2,h3{margin:0 0 8px;line-height:1.25}
+nav,.filters{display:flex;flex-wrap:wrap;gap:10px;align-items:end}
+button,select{font:inherit;color:var(--ink);background:#fff;border:1px solid var(--line);border-radius:8px;min-height:42px;padding:7px 12px}
+button{cursor:pointer}
+nav button[aria-pressed="true"]{background:var(--navy);color:#fff;border-color:var(--navy)}
+button:focus-visible,select:focus-visible{outline:3px solid #007b77;outline-offset:3px}
+.filters{margin:17px 0 10px}
+label{display:grid;gap:4px;font-size:.85rem;font-weight:650}
+select{min-width:150px}
+.context,.caption,footer{font-size:.88rem;color:var(--muted)}
+.context{margin-bottom:22px}
+.cards{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin:18px 0}
+.card,.panel{background:white;border:1px solid var(--line);border-radius:12px;padding:16px}
+.card strong{display:block;font-size:clamp(1.45rem,3vw,2.1rem);margin:5px 0;font-variant-numeric:tabular-nums}
+.card span,.card small{display:block;color:var(--muted)}
+.card span{font-size:.9rem;font-weight:650}
+.card small{font-size:.8rem}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin-bottom:18px}
+.panel{min-width:0}
+.panel p{margin:0 0 14px}
+.panel.wide{grid-column:1/-1}
+.table-wrap{overflow:auto}
+table{width:100%;border-collapse:collapse;font-size:.87rem;font-variant-numeric:tabular-nums}
+th,td{padding:8px;text-align:right;border-bottom:1px solid var(--line)}
+th:first-child,td:first-child{text-align:left}
+thead{background:#f5f9f9}
+.track{width:100%;height:8px;margin-top:4px;border-radius:8px;background:#e5eeee;overflow:hidden}
+.fill{background:var(--teal);height:100%;border-radius:8px}
+.flag{display:block;color:#814716;font-size:.73rem}
+.callout{padding:14px 17px;border-left:4px solid var(--teal);background:#dff4ef;border-radius:0 8px 8px 0;margin:18px 0}
+footer a{color:#006b64}
+[hidden]{display:none!important}
+@media(max-width:720px){.cards,.grid{grid-template-columns:repeat(2,minmax(0,1fr))}.grid .panel{grid-column:1/-1}}
+@media(max-width:430px){main,footer{padding:18px 12px}header{padding:26px 16px}th,td{padding:6px}.card{padding:12px}}
+</style>
+</head>
+<body>
+<header>
+  <div class="eyebrow">Portfolio case · Marketing analytics</div>
+  <h1>Bank Campaign Review</h1>
+  <p>How many records ended in a subscription, and what should the campaign team investigate before its next round of calls?</p>
+</header>
+<main>
+<nav aria-label="Dashboard pages">
+  <button type="button" data-page="overview" aria-controls="overview" aria-pressed="true">01 · Campaign overview</button>
+  <button type="button" data-page="followup" aria-controls="followup" aria-pressed="false">02 · Follow-up and history</button>
+</nav>
+<div class="filters" aria-label="Filters">
+  <label>Contact channel<select id="channel"><option value="">All channels</option><option>Cellular</option><option>Telephone</option><option>Not recorded</option></select></label>
+  <label>Last contact month<select id="month"><option value="">All months</option></select></label>
+  <label>Prior contact<select id="history"><option value="">All records</option><option>No prior contact</option><option>Prior contact</option></select></label>
+  <button type="button" id="reset">Reset filters</button>
+</div>
+<p id="context" class="context" aria-live="polite"></p>
+<section id="overview" aria-labelledby="overview-title">
+  <h2 id="overview-title">Campaign overview</h2>
+  <p class="caption">Start with the overall result, then compare volume and rate by channel and month.</p>
+  <div id="overview-cards" class="cards"></div>
+  <div class="grid">
+    <section class="panel"><h3>Channel mix</h3><p class="caption">Bars show subscription rate on a 0–100% scale.</p><div id="channel-chart"></div></section>
+    <section class="panel"><h3>Subscriptions by month</h3><p class="caption">Bars show subscription counts relative to the largest month shown. Month is a label here, not a dated trend.</p><div id="month-chart"></div></section>
+  </div>
+</section>
+<section id="followup" aria-labelledby="followup-title" hidden>
+  <h2 id="followup-title">Follow-up and history</h2>
+  <p class="caption">Compare groups by how many contacts were recorded and whether a prior campaign reached them.</p>
+  <div id="followup-cards" class="cards"></div>
+  <div class="grid">
+    <section class="panel"><h3>Current campaign effort</h3><p class="caption">Contacts include the last contact. Bars show subscription rate on a 0–100% scale.</p><div id="band-chart"></div></section>
+    <section class="panel"><h3>Previous campaign outcome</h3><p class="caption">Only records with prior contact. “Success” here refers to a previous campaign.</p><div id="history-chart"></div></section>
+  </div>
+</section>
+<aside class="callout"><strong>How to read the results:</strong> Rates divide subscriptions by campaign records in the current selection. A record is not a unique person or a single call. Comparisons show patterns, not the effect of changing call frequency.</aside>
+</main>
+<footer>Source: <a href="https://doi.org/10.24432/C5K306">UCI Bank Marketing</a> · bank-full.csv · CC BY 4.0 · Historical campaign records. This report runs offline.</footer>
+<script>
+const MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+const BANDS = ['1 contact','2–3 contacts','4–6 contacts','7+ contacts'];
+
+// Group rows contain dimensions, followed by records, subscriptions, and contact sum.
+// Add the counts first, then divide: an average of subgroup rates would be wrong.
+function summarize(rows) {
+  const total = rows.reduce((a, r) => ({
+    records: a.records + r[5],
+    subscriptions: a.subscriptions + r[6],
+    contacts: a.contacts + r[7],
+    known: a.known + (r[0] === 'Not recorded' ? 0 : r[5])
+  }), {records: 0, subscriptions: 0, contacts: 0, known: 0});
+  total.rate = total.records ? total.subscriptions / total.records : null;
+  total.avgContacts = total.records ? total.contacts / total.records : null;
+  total.knownShare = total.records ? total.known / total.records : null;
+  return total;
+}
+
+function selectGroups(rows, filters) {
+  return rows.filter(r =>
+    (!filters.channel || r[0] === filters.channel) &&
+    (!filters.month || r[1] === Number(filters.month)) &&
+    (!filters.history || r[3] === filters.history));
+}
+
+function byCategory(rows, index, labels) {
+  const groups = new Map();
+  for (const row of rows) {
+    const key = row[index];
+    if (!groups.has(key)) groups.set(key, []);
+    groups.get(key).push(row);
+  }
+  return [...groups].sort(([a],[b]) => typeof a === 'number' ? a - b : a.localeCompare(b))
+    .map(([key, group]) => ({label: labels ? labels[key-1] : key, ...summarize(group)}));
+}
+
+if (typeof module !== 'undefined') module.exports = { summarize, selectGroups, byCategory };
+
+const data = [["Cellular", 1, 1, "No prior contact", "No prior contact", 464, 37, 464], ["Cellular", 1, 1, "Prior contact", "Failure", 158, 8, 158], ["Cellular", 1, 1, "Prior contact", "Other", 65, 7, 65], ["Cellular", 1, 1, "Prior contact", "Success", 36, 23, 36], ["Cellular", 1, 2, "No prior contact", "No prior contact", 316, 34, 701], ["Cellular", 1, 2, "Prior contact", "Failure", 101, 2, 225], ["Cellular", 1, 2, "Prior contact", "Other", 57, 3, 128], ["Cellular", 1, 2, "Prior contact", "Success", 13, 5, 28], ["Cellular", 1, 3, "No prior contact", "No prior contact", 27, 3, 115], ["Cellular", 1, 3, "Prior contact", "Failure", 12, 0, 55], ["Cellular", 1, 3, "Prior contact", "Other", 7, 1, 31], ["Cellular", 1, 3, "Prior contact", "Success", 4, 4, 17], ["Cellular", 1, 4, "No prior contact", "No prior contact", 2, 2, 18], ["Cellular", 1, 4, "Prior contact", "Failure", 1, 0, 7], ["Cellular", 1, 4, "Prior contact", "Success", 2, 0, 14], ["Cellular", 2, 1, "No prior contact", "No prior contact", 673, 112, 673], ["Cellular", 2, 1, "Prior contact", "Failure", 229, 33, 229], ["Cellular", 2, 1, "Prior contact", "Other", 70, 8, 70], ["Cellular", 2, 1, "Prior contact", "Success", 84, 58, 84], ["Cellular", 2, 2, "No prior contact", "No prior contact", 590, 86, 1362], ["Cellular", 2, 2, "Prior contact", "Failure", 180, 20, 407], ["Cellular", 2, 2, "Prior contact", "Other", 106, 12, 251], ["Cellular", 2, 2, "Prior contact", "Success", 39, 30, 88], ["Cellular", 2, 3, "No prior contact", "No prior contact", 178, 19, 852], ["Cellular", 2, 3, "Prior contact", "Failure", 64, 3, 296], ["Cellular", 2, 3, "Prior contact", "Other", 36, 1, 176], ["Cellular", 2, 3, "Prior contact", "Success", 9, 6, 39], ["Cellular", 2, 4, "No prior contact", "No prior contact", 75, 11, 682], ["Cellular", 2, 4, "Prior contact", "Failure", 14, 0, 109], ["Cellular", 2, 4, "Prior contact", "Other", 14, 0, 111], ["Cellular", 2, 4, "Prior contact", "Success", 1, 0, 7], ["Cellular", 3, 1, "No prior contact", "No prior contact", 125, 75, 125], ["Cellular", 3, 1, "Prior contact", "Failure", 27, 11, 27], ["Cellular", 3, 1, "Prior contact", "Other", 18, 9, 18], ["Cellular", 3, 1, "Prior contact", "Success", 27, 21, 27], ["Cellular", 3, 2, "No prior contact", "No prior contact", 103, 50, 227], ["Cellular", 3, 2, "Prior contact", "Failure", 31, 14, 68], ["Cellular", 3, 2, "Prior contact", "Other", 10, 4, 23], ["Cellular", 3, 2, "Prior contact", "Success", 21, 18, 47], ["Cellular", 3, 3, "No prior contact", "No prior contact", 29, 13, 130], ["Cellular", 3, 3, "Prior contact", "Failure", 8, 2, 37], ["Cellular", 3, 3, "Prior contact", "Other", 4, 2, 18], ["Cellular", 3, 4, "No prior contact", "No prior contact", 12, 3, 134], ["Cellular", 3, 4, "Prior contact", "Other", 1, 0, 11], ["Cellular", 3, 4, "Prior contact", "Success", 1, 0, 7], ["Cellular", 4, 1, "No prior contact", "No prior contact", 853, 206, 853], ["Cellular", 4, 1, "Prior contact", "Failure", 357, 40, 357], ["Cellular", 4, 1, "Prior contact", "Other", 97, 17, 97], ["Cellular", 4, 1, "Prior contact", "Success", 81, 51, 81], ["Cellular", 4, 2, "No prior contact", "No prior contact", 650, 127, 1495], ["Cellular", 4, 2, "Prior contact", "Failure", 294, 22, 671], ["Cellular", 4, 2, "Prior contact", "Other", 107, 12, 253], ["Cellular", 4, 2, "Prior contact", "Success", 28, 13, 62], ["Cellular", 4, 3, "No prior contact", "No prior contact", 146, 24, 671], ["Cellular", 4, 3, "Prior contact", "Failure", 43, 6, 197], ["Cellular", 4, 3, "Prior contact", "Other", 32, 2, 145], ["Cellular", 4, 3, "Prior contact", "Success", 10, 8, 46], ["Cellular", 4, 4, "No prior contact", "No prior contact", 20, 2, 178], ["Cellular", 4, 4, "Prior contact", "Failure", 5, 0, 52], ["Cellular", 4, 4, "Prior contact", "Other", 3, 2, 23], ["Cellular", 4, 4, "Prior contact", "Success", 1, 1, 8], ["Cellular", 5, 1, "No prior contact", "No prior contact", 1375, 172, 1375], ["Cellular", 5, 1, "Prior contact", "Failure", 752, 63, 752], ["Cellular", 5, 1, "Prior contact", "Other", 177, 22, 177], ["Cellular", 5, 1, "Prior contact", "Success", 118, 66, 118], ["Cellular", 5, 2, "No prior contact", "No prior contact", 1125, 128, 2612], ["Cellular", 5, 2, "Prior contact", "Failure", 602, 51, 1368], ["Cellular", 5, 2, "Prior contact", "Other", 225, 23, 532], ["Cellular", 5, 2, "Prior contact", "Success", 72, 37, 165], ["Cellular", 5, 3, "No prior contact", "No prior contact", 403, 41, 1893], ["Cellular", 5, 3, "Prior contact", "Failure", 170, 13, 800], ["Cellular", 5, 3, "Prior contact", "Other", 99, 5, 460], ["Cellular", 5, 3, "Prior contact", "Success", 20, 5, 93], ["Cellular", 5, 4, "No prior contact", "No prior contact", 102, 4, 846], ["Cellular", 5, 4, "Prior contact", "Failure", 45, 1, 366], ["Cellular", 5, 4, "Prior contact", "Other", 39, 1, 331], ["Cellular", 5, 4, "Prior contact", "Success", 7, 1, 54], ["Cellular", 6, 1, "No prior contact", "No prior contact", 236, 93, 236], ["Cellular", 6, 1, "Prior contact", "Failure", 73, 20, 73], ["Cellular", 6, 1, "Prior contact", "Other", 31, 13, 31], ["Cellular", 6, 1, "Prior contact", "Success", 59, 39, 59], ["Cellular", 6, 2, "No prior contact", "No prior contact", 167, 70, 380], ["Cellular", 6, 2, "Prior contact", "Failure", 33, 14, 73], ["Cellular", 6, 2, "Prior contact", "Other", 21, 10, 50], ["Cellular", 6, 2, "Prior contact", "Outcome not recorded", 1, 0, 3], ["Cellular", 6, 2, "Prior contact", "Success", 47, 36, 102], ["Cellular", 6, 3, "No prior contact", "No prior contact", 34, 12, 152], ["Cellular", 6, 3, "Prior contact", "Failure", 11, 3, 51], ["Cellular", 6, 3, "Prior contact", "Other", 4, 4, 19], ["Cellular", 6, 3, "Prior contact", "Success", 8, 4, 41], ["Cellular", 6, 4, "No prior contact", "No prior contact", 1, 1, 7], ["Cellular", 6, 4, "Prior contact", "Failure", 3, 1, 21], ["Cellular", 7, 1, "No prior contact", "No prior contact", 1733, 136, 1733], ["Cellular", 7, 1, "Prior contact", "Failure", 46, 17, 46], ["Cellular", 7, 1, "Prior contact", "Other", 13, 6, 13], ["Cellular", 7, 1, "Prior contact", "Success", 34, 27, 34], ["Cellular", 7, 2, "No prior contact", "No prior contact", 2212, 174, 5239], ["Cellular", 7, 2, "Prior contact", "Failure", 36, 13, 83], ["Cellular", 7, 2, "Prior contact", "Other", 17, 14, 38], ["Cellular", 7, 2, "Prior contact", "Success", 45, 30, 99], ["Cellular", 7, 3, "No prior contact", "No prior contact", 1025, 93, 4795], ["Cellular", 7, 3, "Prior contact", "Failure", 12, 4, 57], ["Cellular", 7, 3, "Prior contact", "Other", 6, 3, 27], ["Cellular", 7, 3, "Prior contact", "Success", 7, 4, 35], ["Cellular", 7, 4, "No prior contact", "No prior contact", 575, 33, 7501], ["Cellular", 7, 4, "Prior contact", "Failure", 2, 0, 18], ["Cellular", 7, 4, "Prior contact", "Other", 3, 1, 24], ["Cellular", 7, 4, "Prior contact", "Success", 1, 0, 7], ["Cellular", 8, 1, "No prior contact", "No prior contact", 650, 120, 650], ["Cellular", 8, 1, "Prior contact", "Failure", 122, 37, 122], ["Cellular", 8, 1, "Prior contact", "Other", 38, 14, 38], ["Cellular", 8, 1, "Prior contact", "Success", 97, 61, 97], ["Cellular", 8, 2, "No prior contact", "No prior contact", 2463, 170, 5495], ["Cellular", 8, 2, "Prior contact", "Failure", 80, 26, 182], ["Cellular", 8, 2, "Prior contact", "Other", 30, 13, 76], ["Cellular", 8, 2, "Prior contact", "Success", 88, 59, 206], ["Cellular", 8, 3, "No prior contact", "No prior contact", 1529, 102, 7050], ["Cellular", 8, 3, "Prior contact", "Failure", 13, 2, 58], ["Cellular", 8, 3, "Prior contact", "Other", 7, 2, 35], ["Cellular", 8, 3, "Prior contact", "Outcome not recorded", 1, 1, 4], ["Cellular", 8, 3, "Prior contact", "Success", 7, 5, 35], ["Cellular", 8, 4, "No prior contact", "No prior contact", 819, 37, 9293], ["Cellular", 8, 4, "Prior contact", "Failure", 1, 1, 8], ["Cellular", 8, 4, "Prior contact", "Other", 2, 0, 23], ["Cellular", 8, 4, "Prior contact", "Success", 3, 1, 26], ["Cellular", 9, 1, "No prior contact", "No prior contact", 107, 54, 107], ["Cellular", 9, 1, "Prior contact", "Failure", 59, 21, 59], ["Cellular", 9, 1, "Prior contact", "Other", 19, 8, 19], ["Cellular", 9, 1, "Prior contact", "Success", 72, 61, 72], ["Cellular", 9, 2, "No prior contact", "No prior contact", 79, 28, 180], ["Cellular", 9, 2, "Prior contact", "Failure", 37, 14, 80], ["Cellular", 9, 2, "Prior contact", "Other", 19, 10, 46], ["Cellular", 9, 2, "Prior contact", "Success", 42, 32, 94], ["Cellular", 9, 3, "No prior contact", "No prior contact", 11, 5, 48], ["Cellular", 9, 3, "Prior contact", "Failure", 4, 1, 21], ["Cellular", 9, 3, "Prior contact", "Other", 6, 3, 28], ["Cellular", 9, 3, "Prior contact", "Success", 5, 3, 23], ["Cellular", 9, 4, "No prior contact", "No prior contact", 2, 0, 15], ["Cellular", 9, 4, "Prior contact", "Failure", 1, 0, 12], ["Cellular", 9, 4, "Prior contact", "Other", 2, 1, 16], ["Cellular", 9, 4, "Prior contact", "Success", 1, 0, 7], ["Cellular", 10, 1, "No prior contact", "No prior contact", 152, 56, 152], ["Cellular", 10, 1, "Prior contact", "Failure", 77, 30, 77], ["Cellular", 10, 1, "Prior contact", "Other", 30, 10, 30], ["Cellular", 10, 1, "Prior contact", "Outcome not recorded", 2, 1, 2], ["Cellular", 10, 1, "Prior contact", "Success", 77, 55, 77], ["Cellular", 10, 2, "No prior contact", "No prior contact", 95, 41, 209], ["Cellular", 10, 2, "Prior contact", "Failure", 44, 12, 98], ["Cellular", 10, 2, "Prior contact", "Other", 17, 7, 37], ["Cellular", 10, 2, "Prior contact", "Outcome not recorded", 1, 0, 3], ["Cellular", 10, 2, "Prior contact", "Success", 37, 29, 87], ["Cellular", 10, 3, "No prior contact", "No prior contact", 9, 1, 40], ["Cellular", 10, 3, "Prior contact", "Failure", 7, 3, 32], ["Cellular", 10, 3, "Prior contact", "Other", 2, 1, 10], ["Cellular", 10, 3, "Prior contact", "Success", 7, 3, 32], ["Cellular", 11, 1, "No prior contact", "No prior contact", 1290, 116, 1290], ["Cellular", 11, 1, "Prior contact", "Failure", 381, 32, 381], ["Cellular", 11, 1, "Prior contact", "Other", 90, 9, 90], ["Cellular", 11, 1, "Prior contact", "Success", 67, 39, 67], ["Cellular", 11, 2, "No prior contact", "No prior contact", 953, 68, 2168], ["Cellular", 11, 2, "Prior contact", "Failure", 282, 21, 628], ["Cellular", 11, 2, "Prior contact", "Other", 73, 9, 161], ["Cellular", 11, 2, "Prior contact", "Success", 52, 30, 116], ["Cellular", 11, 3, "No prior contact", "No prior contact", 208, 17, 970], ["Cellular", 11, 3, "Prior contact", "Failure", 66, 2, 304], ["Cellular", 11, 3, "Prior contact", "Other", 17, 2, 82], ["Cellular", 11, 3, "Prior contact", "Success", 7, 4, 33], ["Cellular", 11, 4, "No prior contact", "No prior contact", 38, 2, 293], ["Cellular", 11, 4, "Prior contact", "Failure", 10, 0, 77], ["Cellular", 11, 4, "Prior contact", "Other", 5, 0, 43], ["Cellular", 11, 4, "Prior contact", "Success", 1, 0, 8], ["Cellular", 12, 1, "No prior contact", "No prior contact", 27, 11, 27], ["Cellular", 12, 1, "Prior contact", "Failure", 20, 5, 20], ["Cellular", 12, 1, "Prior contact", "Other", 6, 3, 6], ["Cellular", 12, 1, "Prior contact", "Success", 20, 14, 20], ["Cellular", 12, 2, "No prior contact", "No prior contact", 40, 22, 92], ["Cellular", 12, 2, "Prior contact", "Failure", 11, 5, 26], ["Cellular", 12, 2, "Prior contact", "Other", 8, 4, 22], ["Cellular", 12, 2, "Prior contact", "Success", 20, 14, 49], ["Cellular", 12, 3, "No prior contact", "No prior contact", 4, 1, 20], ["Cellular", 12, 3, "Prior contact", "Failure", 4, 0, 22], ["Cellular", 12, 3, "Prior contact", "Other", 4, 2, 18], ["Cellular", 12, 3, "Prior contact", "Success", 5, 2, 22], ["Cellular", 12, 4, "No prior contact", "No prior contact", 2, 2, 17], ["Cellular", 12, 4, "Prior contact", "Failure", 1, 0, 7], ["Cellular", 12, 4, "Prior contact", "Success", 2, 1, 15], ["Not recorded", 1, 1, "No prior contact", "No prior contact", 9, 1, 9], ["Not recorded", 2, 1, "No prior contact", "No prior contact", 11, 3, 11], ["Not recorded", 2, 1, "Prior contact", "Failure", 1, 1, 1], ["Not recorded", 2, 1, "Prior contact", "Other", 1, 0, 1], ["Not recorded", 3, 1, "No prior contact", "No prior contact", 5, 3, 5], ["Not recorded", 3, 1, "Prior contact", "Failure", 2, 1, 2], ["Not recorded", 4, 1, "No prior contact", "No prior contact", 6, 5, 6], ["Not recorded", 5, 1, "No prior contact", "No prior contact", 3228, 103, 3228], ["Not recorded", 5, 1, "Prior contact", "Failure", 1, 0, 1], ["Not recorded", 5, 1, "Prior contact", "Other", 3, 2, 3], ["Not recorded", 5, 2, "No prior contact", "No prior contact", 3358, 122, 7771], ["Not recorded", 5, 3, "No prior contact", "No prior contact", 971, 25, 4480], ["Not recorded", 5, 4, "No prior contact", "No prior contact", 414, 9, 4738], ["Not recorded", 6, 1, "No prior contact", "No prior contact", 1578, 65, 1578], ["Not recorded", 6, 1, "Prior contact", "Failure", 4, 0, 4], ["Not recorded", 6, 1, "Prior contact", "Other", 3, 1, 3], ["Not recorded", 6, 1, "Prior contact", "Success", 2, 0, 2], ["Not recorded", 6, 2, "No prior contact", "No prior contact", 1775, 90, 4206], ["Not recorded", 6, 3, "No prior contact", "No prior contact", 684, 32, 3225], ["Not recorded", 6, 4, "No prior contact", "No prior contact", 486, 18, 6230], ["Not recorded", 7, 1, "No prior contact", "No prior contact", 154, 4, 154], ["Not recorded", 7, 1, "Prior contact", "Failure", 4, 0, 4], ["Not recorded", 7, 1, "Prior contact", "Other", 4, 0, 4], ["Not recorded", 7, 1, "Prior contact", "Success", 2, 1, 2], ["Not recorded", 7, 2, "No prior contact", "No prior contact", 84, 5, 202], ["Not recorded", 7, 3, "No prior contact", "No prior contact", 20, 0, 89], ["Not recorded", 7, 4, "No prior contact", "No prior contact", 8, 1, 93], ["Not recorded", 8, 1, "No prior contact", "No prior contact", 40, 3, 40], ["Not recorded", 8, 1, "Prior contact", "Failure", 1, 0, 1], ["Not recorded", 8, 1, "Prior contact", "Other", 3, 1, 3], ["Not recorded", 8, 1, "Prior contact", "Success", 2, 0, 2], ["Not recorded", 8, 2, "No prior contact", "No prior contact", 3, 0, 6], ["Not recorded", 8, 3, "No prior contact", "No prior contact", 1, 1, 4], ["Not recorded", 8, 4, "No prior contact", "No prior contact", 1, 0, 15], ["Not recorded", 9, 1, "No prior contact", "No prior contact", 31, 1, 31], ["Not recorded", 9, 1, "Prior contact", "Failure", 5, 1, 5], ["Not recorded", 9, 1, "Prior contact", "Other", 7, 1, 7], ["Not recorded", 9, 1, "Prior contact", "Success", 4, 0, 4], ["Not recorded", 10, 1, "No prior contact", "No prior contact", 44, 16, 44], ["Not recorded", 10, 1, "Prior contact", "Failure", 3, 0, 3], ["Not recorded", 10, 1, "Prior contact", "Other", 2, 0, 2], ["Not recorded", 10, 1, "Prior contact", "Success", 1, 1, 1], ["Not recorded", 11, 1, "No prior contact", "No prior contact", 31, 10, 31], ["Not recorded", 11, 1, "Prior contact", "Failure", 6, 1, 6], ["Not recorded", 11, 1, "Prior contact", "Other", 2, 0, 2], ["Not recorded", 11, 1, "Prior contact", "Success", 1, 1, 1], ["Not recorded", 11, 2, "No prior contact", "No prior contact", 4, 1, 8], ["Not recorded", 11, 2, "Prior contact", "Failure", 4, 0, 9], ["Not recorded", 11, 2, "Prior contact", "Other", 1, 0, 2], ["Not recorded", 11, 3, "No prior contact", "No prior contact", 1, 0, 4], ["Not recorded", 11, 4, "Prior contact", "Other", 1, 0, 7], ["Not recorded", 12, 1, "No prior contact", "No prior contact", 3, 0, 3], ["Telephone", 1, 1, "No prior contact", "No prior contact", 31, 1, 31], ["Telephone", 1, 1, "Prior contact", "Failure", 8, 0, 8], ["Telephone", 1, 1, "Prior contact", "Other", 3, 0, 3], ["Telephone", 1, 1, "Prior contact", "Success", 4, 3, 4], ["Telephone", 1, 2, "No prior contact", "No prior contact", 46, 4, 108], ["Telephone", 1, 2, "Prior contact", "Failure", 7, 0, 17], ["Telephone", 1, 2, "Prior contact", "Other", 9, 0, 22], ["Telephone", 1, 2, "Prior contact", "Success", 4, 3, 9], ["Telephone", 1, 3, "No prior contact", "No prior contact", 10, 0, 41], ["Telephone", 1, 3, "Prior contact", "Failure", 2, 0, 9], ["Telephone", 1, 3, "Prior contact", "Other", 4, 0, 18], ["Telephone", 1, 3, "Prior contact", "Success", 1, 1, 5], ["Telephone", 2, 1, "No prior contact", "No prior contact", 63, 11, 63], ["Telephone", 2, 1, "Prior contact", "Failure", 15, 4, 15], ["Telephone", 2, 1, "Prior contact", "Other", 3, 0, 3], ["Telephone", 2, 1, "Prior contact", "Success", 4, 2, 4], ["Telephone", 2, 2, "No prior contact", "No prior contact", 70, 12, 164], ["Telephone", 2, 2, "Prior contact", "Failure", 16, 0, 36], ["Telephone", 2, 2, "Prior contact", "Other", 10, 0, 23], ["Telephone", 2, 2, "Prior contact", "Success", 3, 2, 7], ["Telephone", 2, 3, "No prior contact", "No prior contact", 48, 6, 242], ["Telephone", 2, 3, "Prior contact", "Failure", 7, 0, 34], ["Telephone", 2, 3, "Prior contact", "Other", 7, 0, 32], ["Telephone", 2, 3, "Prior contact", "Success", 3, 1, 14], ["Telephone", 2, 4, "No prior contact", "No prior contact", 17, 0, 159], ["Telephone", 2, 4, "Prior contact", "Failure", 3, 0, 22], ["Telephone", 2, 4, "Prior contact", "Other", 5, 0, 43], ["Telephone", 3, 1, "No prior contact", "No prior contact", 11, 6, 11], ["Telephone", 3, 1, "Prior contact", "Failure", 3, 0, 3], ["Telephone", 3, 1, "Prior contact", "Success", 6, 4, 6], ["Telephone", 3, 2, "No prior contact", "No prior contact", 8, 3, 17], ["Telephone", 3, 2, "Prior contact", "Failure", 4, 1, 10], ["Telephone", 3, 2, "Prior contact", "Other", 5, 2, 13], ["Telephone", 3, 2, "Prior contact", "Success", 3, 1, 7], ["Telephone", 3, 3, "No prior contact", "No prior contact", 6, 1, 27], ["Telephone", 3, 3, "Prior contact", "Success", 2, 2, 10], ["Telephone", 3, 4, "No prior contact", "No prior contact", 5, 2, 42], ["Telephone", 4, 1, "No prior contact", "No prior contact", 52, 7, 52], ["Telephone", 4, 1, "Prior contact", "Failure", 12, 2, 12], ["Telephone", 4, 1, "Prior contact", "Other", 2, 0, 2], ["Telephone", 4, 1, "Prior contact", "Success", 6, 4, 6], ["Telephone", 4, 2, "No prior contact", "No prior contact", 51, 12, 123], ["Telephone", 4, 2, "Prior contact", "Failure", 23, 4, 56], ["Telephone", 4, 2, "Prior contact", "Other", 6, 2, 14], ["Telephone", 4, 2, "Prior contact", "Success", 3, 3, 8], ["Telephone", 4, 3, "No prior contact", "No prior contact", 28, 3, 129], ["Telephone", 4, 3, "Prior contact", "Failure", 3, 1, 15], ["Telephone", 4, 3, "Prior contact", "Other", 4, 0, 20], ["Telephone", 4, 4, "No prior contact", "No prior contact", 8, 1, 93], ["Telephone", 4, 4, "Prior contact", "Other", 1, 0, 8], ["Telephone", 5, 1, "No prior contact", "No prior contact", 71, 4, 71], ["Telephone", 5, 1, "Prior contact", "Failure", 35, 0, 35], ["Telephone", 5, 1, "Prior contact", "Other", 4, 0, 4], ["Telephone", 5, 1, "Prior contact", "Success", 7, 5, 7], ["Telephone", 5, 2, "No prior contact", "No prior contact", 94, 6, 229], ["Telephone", 5, 2, "Prior contact", "Failure", 45, 2, 105], ["Telephone", 5, 2, "Prior contact", "Other", 17, 0, 41], ["Telephone", 5, 2, "Prior contact", "Success", 6, 4, 13], ["Telephone", 5, 3, "No prior contact", "No prior contact", 84, 3, 401], ["Telephone", 5, 3, "Prior contact", "Failure", 27, 1, 129], ["Telephone", 5, 3, "Prior contact", "Other", 20, 1, 100], ["Telephone", 5, 3, "Prior contact", "Success", 6, 2, 30], ["Telephone", 5, 4, "No prior contact", "No prior contact", 27, 3, 232], ["Telephone", 5, 4, "Prior contact", "Failure", 10, 0, 76], ["Telephone", 5, 4, "Prior contact", "Other", 7, 0, 57], ["Telephone", 6, 1, "No prior contact", "No prior contact", 23, 6, 23], ["Telephone", 6, 1, "Prior contact", "Failure", 6, 3, 6], ["Telephone", 6, 1, "Prior contact", "Other", 5, 0, 5], ["Telephone", 6, 2, "No prior contact", "No prior contact", 22, 4, 48], ["Telephone", 6, 2, "Prior contact", "Failure", 1, 0, 2], ["Telephone", 6, 2, "Prior contact", "Other", 4, 0, 9], ["Telephone", 6, 2, "Prior contact", "Success", 2, 0, 5], ["Telephone", 6, 3, "No prior contact", "No prior contact", 9, 2, 41], ["Telephone", 6, 3, "Prior contact", "Failure", 2, 1, 9], ["Telephone", 6, 3, "Prior contact", "Other", 2, 2, 11], ["Telephone", 6, 4, "No prior contact", "No prior contact", 4, 2, 41], ["Telephone", 7, 1, "No prior contact", "No prior contact", 155, 11, 155], ["Telephone", 7, 1, "Prior contact", "Failure", 2, 2, 2], ["Telephone", 7, 1, "Prior contact", "Other", 1, 0, 1], ["Telephone", 7, 1, "Prior contact", "Success", 8, 8, 8], ["Telephone", 7, 2, "No prior contact", "No prior contact", 311, 14, 736], ["Telephone", 7, 2, "Prior contact", "Failure", 5, 2, 11], ["Telephone", 7, 2, "Prior contact", "Other", 1, 1, 2], ["Telephone", 7, 2, "Prior contact", "Success", 2, 2, 4], ["Telephone", 7, 3, "No prior contact", "No prior contact", 182, 8, 877], ["Telephone", 7, 3, "Prior contact", "Failure", 1, 0, 4], ["Telephone", 7, 3, "Prior contact", "Other", 1, 1, 5], ["Telephone", 7, 4, "No prior contact", "No prior contact", 182, 12, 2192], ["Telephone", 7, 4, "Prior contact", "Failure", 1, 0, 7], ["Telephone", 8, 1, "No prior contact", "No prior contact", 40, 8, 40], ["Telephone", 8, 1, "Prior contact", "Failure", 11, 3, 11], ["Telephone", 8, 1, "Prior contact", "Other", 3, 0, 3], ["Telephone", 8, 1, "Prior contact", "Success", 4, 3, 4], ["Telephone", 8, 2, "No prior contact", "No prior contact", 78, 7, 173], ["Telephone", 8, 2, "Prior contact", "Failure", 7, 1, 18], ["Telephone", 8, 2, "Prior contact", "Other", 3, 1, 6], ["Telephone", 8, 2, "Prior contact", "Success", 6, 3, 12], ["Telephone", 8, 3, "No prior contact", "No prior contact", 48, 4, 226], ["Telephone", 8, 3, "Prior contact", "Failure", 2, 0, 11], ["Telephone", 8, 4, "No prior contact", "No prior contact", 44, 2, 561], ["Telephone", 9, 1, "No prior contact", "No prior contact", 16, 3, 16], ["Telephone", 9, 1, "Prior contact", "Failure", 10, 3, 10], ["Telephone", 9, 1, "Prior contact", "Other", 3, 1, 3], ["Telephone", 9, 1, "Prior contact", "Success", 3, 2, 3], ["Telephone", 9, 2, "No prior contact", "No prior contact", 15, 9, 37], ["Telephone", 9, 2, "Prior contact", "Failure", 2, 1, 4], ["Telephone", 9, 2, "Prior contact", "Other", 2, 1, 4], ["Telephone", 9, 2, "Prior contact", "Success", 5, 4, 13], ["Telephone", 9, 3, "No prior contact", "No prior contact", 5, 1, 22], ["Telephone", 9, 3, "Prior contact", "Other", 3, 0, 14], ["Telephone", 9, 4, "Prior contact", "Failure", 2, 0, 22], ["Telephone", 10, 1, "No prior contact", "No prior contact", 73, 36, 73], ["Telephone", 10, 1, "Prior contact", "Failure", 10, 4, 10], ["Telephone", 10, 1, "Prior contact", "Other", 4, 1, 4], ["Telephone", 10, 1, "Prior contact", "Success", 3, 3, 3], ["Telephone", 10, 2, "No prior contact", "No prior contact", 20, 3, 46], ["Telephone", 10, 2, "Prior contact", "Failure", 5, 2, 13], ["Telephone", 10, 2, "Prior contact", "Other", 5, 2, 12], ["Telephone", 10, 2, "Prior contact", "Success", 6, 4, 14], ["Telephone", 10, 3, "No prior contact", "No prior contact", 3, 1, 12], ["Telephone", 10, 3, "Prior contact", "Failure", 1, 0, 4], ["Telephone", 10, 4, "Prior contact", "Other", 1, 1, 7], ["Telephone", 11, 1, "No prior contact", "No prior contact", 154, 24, 154], ["Telephone", 11, 1, "Prior contact", "Failure", 16, 0, 16], ["Telephone", 11, 1, "Prior contact", "Other", 9, 2, 9], ["Telephone", 11, 1, "Prior contact", "Success", 7, 4, 7], ["Telephone", 11, 2, "No prior contact", "No prior contact", 102, 3, 242], ["Telephone", 11, 2, "Prior contact", "Failure", 21, 2, 50], ["Telephone", 11, 2, "Prior contact", "Other", 7, 0, 17], ["Telephone", 11, 2, "Prior contact", "Success", 5, 2, 11], ["Telephone", 11, 3, "No prior contact", "No prior contact", 28, 0, 128], ["Telephone", 11, 3, "Prior contact", "Failure", 10, 0, 45], ["Telephone", 11, 3, "Prior contact", "Other", 4, 1, 19], ["Telephone", 11, 4, "No prior contact", "No prior contact", 11, 1, 91], ["Telephone", 11, 4, "Prior contact", "Failure", 1, 0, 8], ["Telephone", 11, 4, "Prior contact", "Other", 3, 0, 29], ["Telephone", 11, 4, "Prior contact", "Success", 1, 0, 8], ["Telephone", 12, 1, "No prior contact", "No prior contact", 15, 4, 15], ["Telephone", 12, 1, "Prior contact", "Failure", 2, 1, 2], ["Telephone", 12, 1, "Prior contact", "Other", 2, 2, 2], ["Telephone", 12, 1, "Prior contact", "Success", 1, 1, 1], ["Telephone", 12, 2, "No prior contact", "No prior contact", 3, 2, 6], ["Telephone", 12, 2, "Prior contact", "Failure", 3, 1, 8], ["Telephone", 12, 2, "Prior contact", "Other", 2, 1, 4], ["Telephone", 12, 2, "Prior contact", "Success", 2, 2, 5], ["Telephone", 12, 3, "No prior contact", "No prior contact", 2, 0, 12], ["Telephone", 12, 3, "Prior contact", "Other", 3, 0, 16], ["Telephone", 12, 3, "Prior contact", "Success", 1, 0, 5], ["Telephone", 12, 4, "Prior contact", "Other", 1, 0, 8]];
+const el = id => document.getElementById(id);
+const number = n => n.toLocaleString('en-US');
+const pct = n => n === null ? '—' : (100*n).toFixed(2) + '%';
+const decimal = n => n === null ? '—' : n.toFixed(2);
+const whole = summarize(data);
+for (const [i, m] of MONTHS.entries()) el('month').add(new Option(m, i+1));
+
+function cards(items) {
+  return items.map(([label,value,note]) => '<div class="card"><span>'+label+'</span><strong>'+value+'</strong><small>'+note+'</small></div>').join('');
+}
+function chart(rows, label, metric) {
+  if (!rows.length) return '<p>No records match these filters.</p>';
+  const max = metric === 'subscriptions' ? Math.max(1,...rows.map(r => r.subscriptions)) : 1;
+  return '<div class="table-wrap"><table><thead><tr><th scope="col">'+label+'</th><th scope="col">Records</th><th scope="col">Yes</th><th scope="col">Rate</th></tr></thead><tbody>'+
+    rows.map(r => {
+      const bar = '<div class="track" aria-hidden="true"><div class="fill" style="width:'+ (100*r[metric]/max).toFixed(2)+'%"></div></div>';
+      return '<tr><td>'+r.label+(metric==='subscriptions'?bar:'')+'</td><td>'+number(r.records)+(r.records<100?'<small class="flag">Small group</small>':'')+'</td><td>'+number(r.subscriptions)+'</td><td>'+pct(r.rate)+(metric==='rate'?bar:'')+'</td></tr>';
+    }).join('')+'</tbody></table></div>';
+}
+function render() {
+  const rows = selectGroups(data, {channel:el('channel').value,month:el('month').value,history:el('history').value});
+  const s = summarize(rows);
+  const prior = summarize(rows.filter(r => r[3] === 'Prior contact'));
+  const high = summarize(rows.filter(r => r[2] === 4));
+  el('context').textContent = number(s.records)+' of '+number(whole.records)+' campaign records in view. Groups below 100 records are marked.';
+  el('overview-cards').innerHTML = cards([
+    ['Campaign records',number(s.records),'Denominator for the rate'],
+    ['Subscriptions',number(s.subscriptions),'Records with a yes outcome'],
+    ['Subscription rate',pct(s.rate),'Subscriptions ÷ records'],
+    ['Channel coverage',pct(s.knownShare),'Records with a known channel']
+  ]);
+  el('followup-cards').innerHTML = cards([
+    ['Average contacts',decimal(s.avgContacts),'Per campaign record'],
+    ['7+ contact records',number(high.records),'High-effort comparison group'],
+    ['Prior contact records',number(prior.records),'Contacted in a previous campaign'],
+    ['Prior contact rate',pct(prior.rate),'Subscription rate within that group']
+  ]);
+  el('channel-chart').innerHTML = chart(byCategory(rows,0), 'Channel', 'rate');
+  el('month-chart').innerHTML = chart(byCategory(rows,1,MONTHS), 'Month', 'subscriptions');
+  el('band-chart').innerHTML = chart(byCategory(rows,2,BANDS), 'Contacts', 'rate');
+  el('history-chart').innerHTML = chart(byCategory(rows.filter(r=>r[3]==='Prior contact'),4),'Prior outcome','rate');
+}
+
+for (const id of ['channel','month','history']) el(id).addEventListener('change', render);
+el('reset').addEventListener('click', () => {
+  for (const id of ['channel','month','history']) el(id).value = '';
+  render();
+});
+const nav = [...document.querySelectorAll('[data-page]')];
+for (const button of nav) button.addEventListener('click', () => {
+  for (const item of nav) {
+    const active = item === button;
+    item.setAttribute('aria-pressed', String(active));
+    el(item.dataset.page).hidden = !active;
+  }
+});
+render();
+</script>
+</body>
+</html>

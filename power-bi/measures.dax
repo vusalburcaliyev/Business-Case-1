@@ -1,0 +1,41 @@
+// Create each named measure separately on the Campaign table.
+// Format measures ending in Rate or Share as Percentage.
+
+Campaign Records =
+COALESCE(COUNTROWS(Campaign), 0)
+
+Subscriptions =
+COALESCE(SUM(Campaign[subscribed]), 0)
+
+Subscription Rate =
+DIVIDE([Subscriptions], [Campaign Records])
+
+Average Contacts =
+AVERAGE(Campaign[contact_count])
+
+Known Channel Records =
+CALCULATE(
+    [Campaign Records],
+    KEEPFILTERS(Campaign[channel] <> "Not recorded")
+)
+
+Known Channel Share =
+DIVIDE([Known Channel Records], [Campaign Records])
+
+Prior Contact Records =
+CALCULATE(
+    [Campaign Records],
+    KEEPFILTERS(Campaign[prior_contact] = "Prior contact")
+)
+
+Prior Contact Subscription Rate =
+CALCULATE(
+    [Subscription Rate],
+    KEEPFILTERS(Campaign[prior_contact] = "Prior contact")
+)
+
+High Effort Records =
+CALCULATE(
+    [Campaign Records],
+    KEEPFILTERS(Campaign[contact_count] >= 7)
+)
