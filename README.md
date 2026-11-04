@@ -1,14 +1,34 @@
 # Bank Campaign Review
 
-**A marketing team has 45,211 campaign records. The next question: what should it look at before planning another round of calls?**
+## Introduction
 
-This case reviews a Portuguese bank's phone campaign for term deposits. It starts with a simple scorecard, then checks whether the story changes when we look at channel, call frequency, and campaign history.
+I wanted to know what a bank should check before planning another round of calls. I looked at subscriptions, how often people were contacted, and which campaign details were missing.
 
 [Open the dashboard file](dashboard/Bank_Campaign_Dashboard.html) · [Explore the SQL](docs/SQL_WALKTHROUGH.md) · [Build it in Power BI](power-bi/BUILD_GUIDE.md)
 
 Download or extract the project and open `dashboard/Bank_Campaign_Dashboard.html` in a browser. It has two pages and works offline. If you're browsing on GitHub, download the HTML to run it.
 
-## 1. Start with what happened
+## Background
+
+I used the [UCI Bank Marketing dataset](https://doi.org/10.24432/C5K306) to review a Portuguese bank’s campaign for term deposits. I counted campaign records because the file does not identify unique customers.
+
+### The Questions Answered:
+
+1. What was the subscription rate, and how did missing channel labels affect it?
+2. Which month labels led on subscription count and rate?
+3. How did subscription rates differ by contact frequency and previous campaign contact?
+
+## Tools
+
+- **SQL and SQLite:** I built the model and queried campaign records.
+- **Python:** I prepared the data and checked the results.
+- **HTML, JavaScript and DAX:** I built a browser dashboard and wrote Power BI measures.
+
+## Analysis
+
+### Findings
+
+#### 1. Subscription rate and missing channels
 
 | Measure | Result |
 |---|---:|
@@ -23,7 +43,7 @@ Before comparing channels, check what the file actually tells us. The last-conta
 
 ![Overview: 45,211 campaign records, 5,289 subscriptions, and channel rates with counts](assets/overview.svg)
 
-## 2. Check whether volume and rate tell the same story
+#### 2. Subscription count and rate by month
 
 **May produced 925 subscriptions**, the most of any month label, even though its rate was **6.72%**. **March had a 51.99% rate**, but it produced 248 subscriptions from just 477 records. A high rate and a high count answer different questions.
 
@@ -43,7 +63,7 @@ ORDER BY volume_rank, month;
 
 **Why write it this way?** First build one total per month. Then rank the totals, so the ranking compares months instead of individual records. The source has month names but no year column, so this is a comparison of month labels, not a time trend or proof of seasonality.
 
-## 3. Look at follow-up before making a recommendation
+#### 3. Contact frequency and previous campaigns
 
 The rate was **14.60%** for records with one contact and **5.25%** for records with seven or more. The [contact-band query](sql/05_contact_bands.sql) puts the sample sizes beside the rates:
 
@@ -62,7 +82,7 @@ ORDER BY contact_band_order;
 
 There is another useful clue: records with prior campaign contact had a **23.07%** rate, versus **9.16%** for those without it. This is a reason to compare similar groups in a follow-up study. It doesn't tell us that earlier calls caused more subscriptions, or that reducing calls would raise the rate.
 
-## 4. Turn the questions into two dashboard pages
+### How I showed it in the dashboard
 
 | Page | What it shows | How to use it |
 |---|---|---|
@@ -78,7 +98,7 @@ DIVIDE([Subscriptions], [Campaign Records])
 
 **Why this formula?** If you select Telephone, both measures count only the selected records. The rate changes with the selection, and an empty selection returns blank. Averaging the rates for individual channels would give a small channel the same weight as a large one. The [Power BI guide](power-bi/BUILD_GUIDE.md) explains all nine measures and gives expected values to check.
 
-## 5. Decide what to do next
+### What I would look at next
 
 - **Fix channel tracking first.** Review why the last-contact channel is missing and record it consistently in future campaigns.
 - **Review the seven-plus contact group.** Its 3,064 records had a lower observed rate, but harder-to-convert records may simply need more attempts. To test a follow-up policy, compare approved contact plans on similar eligible groups with a consistent outcome window.
