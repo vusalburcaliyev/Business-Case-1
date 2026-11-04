@@ -4,9 +4,9 @@
 
 I wanted to know what a bank should check before planning another round of calls. I looked at subscriptions, how often people were contacted, and which campaign details were missing.
 
-[Power BI report](power-bi/) · [Explore the SQL](docs/SQL_WALKTHROUGH.md) · [Row-level Power BI rebuild guide](power-bi/BUILD_GUIDE.md)
+[Power BI report](power-bi/) · [Explore the SQL](docs/SQL_WALKTHROUGH.md)
 
-The [Power BI project](power-bi/) includes two editable pages: campaign overview and follow-up history.
+The [Power BI project](power-bi/) includes campaign overview and follow-up history. Download and extract the repository ZIP, open `power-bi/BankCampaign.pbip` in Power BI Desktop, and select **Refresh**.
 
 ## Background
 
@@ -96,7 +96,7 @@ Subscription Rate =
 DIVIDE([Total subscriptions], [Campaign records])
 ```
 
-**Why this formula?** If you select Telephone, both measures count only the selected records. The rate changes with the selection, and an empty selection returns blank. Averaging the rates for individual channels would give a small channel the same weight as a large one. The [Power BI guide](power-bi/BUILD_GUIDE.md) explains all nine measures and gives expected values to check.
+**Why this formula?** If you select Telephone, both measures count only the selected records. The rate changes with the selection, and an empty selection returns blank. Averaging the rates for individual channels would give a small channel the same weight as a large one.
 
 ### What I would look at next
 
@@ -108,7 +108,6 @@ DIVIDE([Total subscriptions], [Campaign records])
 
 - **Browse the results:** [15 SQL queries](sql/) and [their CSV outputs](results/). The [SQL walkthrough](docs/SQL_WALKTHROUGH.md) explains what each query answers and why it is structured that way.
 - **Rebuild locally:** From the project folder, run `python scripts/build.py` with Python 3.10+ and SQLite 3.25+ (the version bundled with most modern Python installs). No Python packages or source download are needed. The archive already includes the source snapshot and the Power BI CSV.
-- **Validate:** Run `python -m unittest discover -s tests -v` and, if you have Node.js, `node --test tests/dashboard.test.js`. The checks reconcile headline counts, grouped rates, and selected dashboard totals.
-- **Open in Power BI:** Follow the [Power BI project instructions](power-bi/). I also included a [row-level rebuild exercise](power-bi/BUILD_GUIDE.md) using [Campaign.csv](data/Campaign.csv).
+- **Validate:** Run `python -m unittest discover -s tests -v` after rebuilding. The `tests/` folder checks record counts, key SQL results, and how missing values are handled.
 
 **Data note:** This is the historical [UCI Bank Marketing dataset](https://doi.org/10.24432/C5K306), using `bank-full.csv`. No cost, revenue, unique customer ID, or year is provided. Records with more than six contacts are kept in the main totals and compared separately in the [sensitivity check](results/14_effort_sensitivity.csv). See the [data dictionary](docs/DATA_DICTIONARY.md) for definitions and [source attribution](source/ATTRIBUTION.md) for credit and license.

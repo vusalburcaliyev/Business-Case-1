@@ -1,9 +1,8 @@
-"""Build the SQLite model, SQL results, Power BI data, and browser dashboard."""
+"""Build the SQLite model, SQL results, Power BI data, and figures."""
 import csv
 import gzip
 import hashlib
 import io
-import json
 import sqlite3
 from pathlib import Path
 
@@ -57,22 +56,13 @@ def main():
             if sql.name.startswith('00_'):
                 continue
             csv_export(ROOT / 'results' / (sql.stem + '.csv'), db.execute(sql.read_text(encoding='utf-8')))
-        groups = db.execute("""
-          SELECT channel, month_number, contact_band_order, prior_contact, previous_outcome,
-                 COUNT(*), SUM(subscribed), SUM(contact_count)
-          FROM campaign GROUP BY 1,2,3,4,5 ORDER BY 1,2,3,4,5
-        """).fetchall()
         score = db.execute('SELECT COUNT(*), SUM(subscribed) FROM campaign').fetchone()
     if score != (len(rows), sum(row['y'] == 'yes' for row in rows)):
         raise ValueError('Counts did not reconcile with the source.')
-    template = (ROOT / 'dashboard/template.html').read_text(encoding='utf-8')
-    logic = (ROOT / 'dashboard/metrics.js').read_text(encoding='utf-8')
-    html = template.replace('/* @METRICS */', logic).replace('/* @GROUPS */', json.dumps(groups).replace('<', '\\u003c'))
-    (ROOT / 'dashboard/Bank_Campaign_Dashboard.html').write_text(html, encoding='utf-8')
     from previews import main as build_previews
     build_previews()
     print(f'{score[0]:,} records; {score[1]:,} subscriptions; {score[1]/score[0]:.2%} subscription rate.')
-    print(f'Created 15 SQL result tables and {len(groups)} dashboard groups.')
+    print('Created 15 SQL result tables.')
 
 
 if __name__ == '__main__':
