@@ -1,0 +1,37 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.4.0/schema.json",
+  "name": "c8a3d86667c70f974a16",
+  "position": {
+    "x": 28,
+    "y": 632,
+    "z": 9000,
+    "height": 69,
+    "width": 1224,
+    "tabOrder": 9000
+  },
+  "visual": {
+    "visualType": "textbox",
+    "objects": {
+      "general": [
+        {
+          "properties": {
+            "paragraphs": [
+              {
+                "textRuns": [
+                  {
+                    "value": "I counted campaign records rather than unique people. The source has month labels without years, and I kept records with an unknown contact channel.",
+                    "textStyle": {
+                      "fontSize": "13pt",
+                      "fontFamily": "Segoe UI",
+                      "color": "#31465a"
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/gitIntegration/platformProperties/2.0.0/schema.json",
+  "metadata": {
+    "type": "Report",
+    "displayName": "BankCampaign"
+  },
+  "config": {
+    "version": "2.0",
+    "logicalId": "728d540b-9370-4eda-ab9a-79fb0b62dd55"
+  }
+}

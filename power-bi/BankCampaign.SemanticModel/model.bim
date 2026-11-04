@@ -1,0 +1,145 @@
+{
+  "name": "BankCampaign",
+  "compatibilityLevel": 1600,
+  "model": {
+    "name": "Model",
+    "culture": "en-US",
+    "sourceQueryCulture": "en-US",
+    "defaultPowerBIDataSourceVersion": "powerBI_V3",
+    "discourageImplicitMeasures": true,
+    "dataAccessOptions": {
+      "legacyRedirects": true,
+      "returnErrorValuesAsNull": true
+    },
+    "annotations": [
+      {
+        "name": "PBI_QueryOrder",
+        "value": "[\"Campaign\"]"
+      },
+      {
+        "name": "__PBI_TimeIntelligenceEnabled",
+        "value": "0"
+      }
+    ],
+    "tables": [
+      {
+        "name": "Campaign",
+        "columns": [
+          {
+            "name": "Channel",
+            "dataType": "string",
+            "sourceColumn": "Channel",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "Month",
+            "dataType": "string",
+            "sourceColumn": "Month",
+            "summarizeBy": "none",
+            "sortByColumn": "Month order"
+          },
+          {
+            "name": "Month order",
+            "dataType": "int64",
+            "sourceColumn": "Month order",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "Contact band",
+            "dataType": "string",
+            "sourceColumn": "Contact band",
+            "summarizeBy": "none",
+            "sortByColumn": "Band order"
+          },
+          {
+            "name": "Band order",
+            "dataType": "int64",
+            "sourceColumn": "Band order",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "Prior contact",
+            "dataType": "string",
+            "sourceColumn": "Prior contact",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "Previous outcome",
+            "dataType": "string",
+            "sourceColumn": "Previous outcome",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "Records",
+            "dataType": "int64",
+            "sourceColumn": "Records",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "Subscriptions",
+            "dataType": "int64",
+            "sourceColumn": "Subscriptions",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "Contacts",
+            "dataType": "int64",
+            "sourceColumn": "Contacts",
+            "summarizeBy": "none"
+          }
+        ],
+        "measures": [
+          {
+            "name": "Campaign records",
+            "expression": "SUM('Campaign'[Records])",
+            "formatString": "#,0"
+          },
+          {
+            "name": "Total subscriptions",
+            "expression": "SUM('Campaign'[Subscriptions])",
+            "formatString": "#,0"
+          },
+          {
+            "name": "Total contacts",
+            "expression": "SUM('Campaign'[Contacts])",
+            "formatString": "#,0"
+          },
+          {
+            "name": "Subscription rate",
+            "expression": "DIVIDE([Total subscriptions], [Campaign records])",
+            "formatString": "0.00%"
+          },
+          {
+            "name": "Average contacts",
+            "expression": "DIVIDE([Total contacts], [Campaign records])",
+            "formatString": "0.00"
+          }
+        ],
+        "partitions": [
+          {
+            "name": "Campaign",
+            "mode": "import",
+            "source": {
+              "type": "m",
+              "expression": [
+                "let",
+                "    Snapshot = Json.Document(Binary.Decompress(Binary.FromText(\"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\", BinaryEncoding.Base64), Compression.Deflate)),",
+                "    Rows = Table.FromRows(Snapshot, type table [#\"Channel\" = nullable text, #\"Month\" = nullable text, #\"Month order\" = nullable number, #\"Contact band\" = nullable text, #\"Band order\" = nullable number, #\"Prior contact\" = nullable text, #\"Previous outcome\" = nullable text, #\"Records\" = nullable number, #\"Subscriptions\" = nullable number, #\"Contacts\" = nullable number]),",
+                "    Typed = Table.TransformColumnTypes(Rows, {{\"Month order\", Int64.Type}, {\"Band order\", Int64.Type}, {\"Records\", Int64.Type}, {\"Subscriptions\", Int64.Type}, {\"Contacts\", Int64.Type}}, \"en-US\")",
+                "in",
+                "    Typed"
+              ]
+            }
+          }
+        ],
+        "annotations": [
+          {
+            "name": "PBI_ResultType",
+            "value": "Table"
+          }
+        ]
+      }
+    ],
+    "relationships": []
+  }
+}

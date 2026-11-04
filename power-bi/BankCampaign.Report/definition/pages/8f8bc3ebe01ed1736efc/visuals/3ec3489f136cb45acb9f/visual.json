@@ -1,0 +1,53 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.4.0/schema.json",
+  "name": "3ec3489f136cb45acb9f",
+  "position": {
+    "x": 946,
+    "y": 125,
+    "z": 6000,
+    "height": 108,
+    "width": 296,
+    "tabOrder": 6000
+  },
+  "visual": {
+    "visualType": "card",
+    "query": {
+      "queryState": {
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Campaign"
+                    }
+                  },
+                  "Property": "Average contacts"
+                }
+              },
+              "queryRef": "Campaign.Average contacts",
+              "nativeQueryRef": "Average contacts"
+            }
+          ]
+        }
+      }
+    },
+    "drillFilterOtherVisuals": true,
+    "objects": {
+      "labels": [
+        {
+          "properties": {
+            "labelDisplayUnits": {
+              "expr": {
+                "Literal": {
+                  "Value": "1D"
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}

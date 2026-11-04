@@ -1,0 +1,95 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.4.0/schema.json",
+  "name": "c3203756e00ab4725683",
+  "position": {
+    "x": 640,
+    "y": 248,
+    "z": 8000,
+    "height": 363,
+    "width": 602,
+    "tabOrder": 8000
+  },
+  "visual": {
+    "visualType": "lineChart",
+    "query": {
+      "queryState": {
+        "Category": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Campaign"
+                    }
+                  },
+                  "Property": "Month"
+                }
+              },
+              "queryRef": "Campaign.Month",
+              "nativeQueryRef": "Month"
+            }
+          ]
+        },
+        "Y": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Campaign"
+                    }
+                  },
+                  "Property": "Total subscriptions"
+                }
+              },
+              "queryRef": "Campaign.Total subscriptions",
+              "nativeQueryRef": "Total subscriptions"
+            }
+          ]
+        }
+      },
+      "sortDefinition": {
+        "sort": [
+          {
+            "field": {
+              "Column": {
+                "Expression": {
+                  "SourceRef": {
+                    "Entity": "Campaign"
+                  }
+                },
+                "Property": "Month"
+              }
+            },
+            "direction": "Ascending"
+          }
+        ]
+      }
+    },
+    "drillFilterOtherVisuals": true,
+    "visualContainerObjects": {
+      "title": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Subscriptions by month label'"
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}

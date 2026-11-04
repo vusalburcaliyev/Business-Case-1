@@ -4,9 +4,9 @@
 
 I wanted to know what a bank should check before planning another round of calls. I looked at subscriptions, how often people were contacted, and which campaign details were missing.
 
-[Open the dashboard file](dashboard/Bank_Campaign_Dashboard.html) · [Explore the SQL](docs/SQL_WALKTHROUGH.md) · [Build it in Power BI](power-bi/BUILD_GUIDE.md)
+[Power BI report](power-bi/) · [Explore the SQL](docs/SQL_WALKTHROUGH.md) · [Row-level Power BI rebuild guide](power-bi/BUILD_GUIDE.md)
 
-Download or extract the project and open `dashboard/Bank_Campaign_Dashboard.html` in a browser. It has two pages and works offline. If you're browsing on GitHub, download the HTML to run it.
+The [Power BI project](power-bi/) includes two editable pages: campaign overview and follow-up history.
 
 ## Background
 
@@ -22,7 +22,7 @@ I used the [UCI Bank Marketing dataset](https://doi.org/10.24432/C5K306) to revi
 
 - **SQL and SQLite:** I built the model and queried campaign records.
 - **Python:** I prepared the data and checked the results.
-- **HTML, JavaScript and DAX:** I built a browser dashboard and wrote Power BI measures.
+- **Power BI and DAX:** I built an editable report and used measures that recalculate when a viewer changes the filters.
 
 ## Analysis
 
@@ -89,11 +89,11 @@ There is another useful clue: records with prior campaign contact had a **23.07%
 | **Campaign overview** | Records, subscriptions, rate, known channel share, and results by channel and month | Check the overall result and compare the size of each group before comparing rates. |
 | **Follow-up and history** | Average contacts, seven-plus contact records, effort bands, and previous campaign outcomes | See whether a pattern holds when you filter by channel or prior contact. |
 
-The browser report adds counts across the selected groups before dividing. In Power BI, this measure does the same job:
+In Power BI, I add the selected counts before dividing:
 
 ```dax
 Subscription Rate =
-DIVIDE([Subscriptions], [Campaign Records])
+DIVIDE([Total subscriptions], [Campaign records])
 ```
 
 **Why this formula?** If you select Telephone, both measures count only the selected records. The rate changes with the selection, and an empty selection returns blank. Averaging the rates for individual channels would give a small channel the same weight as a large one. The [Power BI guide](power-bi/BUILD_GUIDE.md) explains all nine measures and gives expected values to check.
@@ -109,6 +109,6 @@ DIVIDE([Subscriptions], [Campaign Records])
 - **Browse the results:** [15 SQL queries](sql/) and [their CSV outputs](results/). The [SQL walkthrough](docs/SQL_WALKTHROUGH.md) explains what each query answers and why it is structured that way.
 - **Rebuild locally:** From the project folder, run `python scripts/build.py` with Python 3.10+ and SQLite 3.25+ (the version bundled with most modern Python installs). No Python packages or source download are needed. The archive already includes the source snapshot and the Power BI CSV.
 - **Validate:** Run `python -m unittest discover -s tests -v` and, if you have Node.js, `node --test tests/dashboard.test.js`. The checks reconcile headline counts, grouped rates, and selected dashboard totals.
-- **Rebuild in Power BI:** Import [Campaign.csv](data/Campaign.csv) and follow the [build guide](power-bi/BUILD_GUIDE.md). The included HTML works today; the DAX is supplied for a Power BI Desktop rebuild and has not been executed in Desktop.
+- **Open in Power BI:** Follow the [Power BI project instructions](power-bi/). I also included a [row-level rebuild exercise](power-bi/BUILD_GUIDE.md) using [Campaign.csv](data/Campaign.csv).
 
 **Data note:** This is the historical [UCI Bank Marketing dataset](https://doi.org/10.24432/C5K306), using `bank-full.csv`. No cost, revenue, unique customer ID, or year is provided. Records with more than six contacts are kept in the main totals and compared separately in the [sensitivity check](results/14_effort_sensitivity.csv). See the [data dictionary](docs/DATA_DICTIONARY.md) for definitions and [source attribution](source/ATTRIBUTION.md) for credit and license.
